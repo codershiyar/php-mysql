@@ -1,0 +1,12 @@
+<?php 
+
+$username = "shiygtjs_codershiyar";
+$password = "Shiyar1999";
+
+$database = new 
+PDO("mysql:host=server232.web-hosting.com; dbname=shiygtjs_codershiyar; charset=utf8;" ,$username,$password);
+
+if($database){
+   echo 'تم اتصال بقاعدة بيانات'; 
+}
+?>

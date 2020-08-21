@@ -1,0 +1,15 @@
+
+<?php
+$username = "root";
+$password = "";
+$database = new PDO("mysql:host=localhost; dbname=codershiyar;",$username,$password);
+
+$sql = $database->prepare("SELECT * FROM users");
+$sql->execute();
+
+echo $sql->rowCount();
+
+?>
+
+
+
