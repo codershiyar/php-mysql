@@ -1,7 +1,7 @@
 <?php 
 
 $username = "shiygtjs_codershiyar";
-$password = "Shiyar1999";
+$password = "test";
 
 $database = new 
 PDO("mysql:host=server232.web-hosting.com; dbname=shiygtjs_codershiyar; charset=utf8;" ,$username,$password);

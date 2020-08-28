@@ -4,12 +4,20 @@ $username = "root";
 $password = "";
 $database = new PDO("mysql:host=localhost; dbname=codershiyar;",$username,$password);
 
-$sql = $database->prepare("SELECT * FROM users");
+$getUser = $database->prepare("SELECT * FROM users WHERE USER_ID = 3 ");
 
-$sql->execute();
+$getUser->execute();
 
-echo $sql->columnCount();
+// $getUser = $getUser->fetch(PDO::FETCH_ASSOC);
 
+// var_dump($getUser );
+// echo "<h1>" . $getUser['EMAIL'] . "</h1>";
+
+$getUser = $getUser->fetchObject();
+
+echo $getUser->USER_ID;
+
+// var_dump($getUser);
 ?>
 
 

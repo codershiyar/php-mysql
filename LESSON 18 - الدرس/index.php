@@ -1,45 +1,45 @@
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
 <?php
 $username = "root";
 $password = "";
 $database = new PDO("mysql:host=localhost; dbname=codershiyar;",$username,$password);
 
-$myFiles = $database->prepare("SELECT * FROM files WHERE fileType = 'image/jpeg' ");
-$myFiles->execute();
+if(isset($_GET['filter'])){
+  $products = $database->prepare("SELECT * FROM products WHERE Price 
+  BETWEEN :startNumber AND :endNumber");
+  $products->bindParam("startNumber",$_GET['startNumber']);
+  $products->bindParam("endNumber",$_GET['endNumber']);
 
-foreach($myFiles AS $data){
-  $getFile = "data:" . $data['fileType'] . ";base64,".base64_encode($data['file']);
-echo "<a href='" . $getFile. "' download>" .$data['fileName'] . "</a> <br>";
-echo '<img src="' .$getFile . '" width="300px" />';
-
+  $products->execute();
+  foreach(  $products AS $myProducts){
+    echo '<div class="card bg-light mb-3" style="max-width: 18rem;">
+    <div class="card-header">' . $myProducts['Name'] .'</div>
+    <div class="card-body">
+      <h5 class="card-title">' . $myProducts['Price'] .' السعر </h5>
+ 
+    </div>
+  </div>';
 }
-
-if(isset($_POST['upload'])){
-$fileName = $_FILES['file']["name"];
-$fileType = $_FILES['file']["type"];
-$fileData = file_get_contents( $_FILES['file']["tmp_name"]);
-
-$addFile = $database->prepare("INSERT INTO files(file,fileName,fileType) 
-VALUES(:file ,:fileName,:fileType)");
-
-$addFile->bindParam("file",$fileData);
-$addFile->bindParam("fileName",$fileName);
-$addFile->bindParam("fileType",$fileType);
-
-if($addFile->execute()){
-echo 'تم حفظ ملف';
 }else{
-  echo 'فشل تخزين ملف';
+  $products = $database->prepare("SELECT * FROM products");
+  $products->execute();
+  foreach(  $products AS $myProducts){
+    echo '<div class="card bg-light mb-3" style="max-width: 18rem;">
+    <div class="card-header">' . $myProducts['Name'] .'</div>
+    <div class="card-body">
+      <h5 class="card-title">' . $myProducts['Price'] .' السعر </h5>
+ 
+    </div>
+  </div>';
+
+  }
 }
-
-}
-
-
-
 ?>
 
-<form method="POST" enctype="multipart/form-data">
 
-<input type="file" name="file" required/>
+<form method="GET">
 
-<button type="submit" name="upload" >حفظ ملف</button>
+<input type="number" name="startNumber">
+<input type="number" name="endNumber">
+<button type="submit" name="filter">فلتر بيانات</button>
 </form>

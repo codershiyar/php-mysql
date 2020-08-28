@@ -4,42 +4,42 @@ $username = "root";
 $password = "";
 $database = new PDO("mysql:host=localhost; dbname=codershiyar;",$username,$password);
 
-if(isset($_GET['filter'])){
-  $products = $database->prepare("SELECT * FROM products WHERE Price 
-  BETWEEN :startNumber AND :endNumber");
-  $products->bindParam("startNumber",$_GET['startNumber']);
-  $products->bindParam("endNumber",$_GET['endNumber']);
+$removeItem = $database->prepare("DELETE FROM files WHERE Id = 2");
+$removeItem->execute();
 
-  $products->execute();
-  foreach(  $products AS $myProducts){
-    echo '<div class="card bg-light mb-3" style="max-width: 18rem;">
-    <div class="card-header">' . $myProducts['Name'] .'</div>
-    <div class="card-body">
-      <h5 class="card-title">' . $myProducts['Price'] .' السعر </h5>
+$getItems = $database->prepare("SELECT * FROM products");
+$getItems->execute();
+
+foreach($getItems AS $data){
+  echo '<div  class="card text-white bg-success mb-3" style="max-width: 18rem;">
+  <div class="card-header">منتج - ' . $data['Id']. '</div>
+  <div class="card-body">
+    <h5 class="card-title">' . $data['Name'] . '</h5>
+    <p class="card-text">' .$data['Price']. ' </p>
+    <form method="POST"> <button class="btn btn-danger" type="submit" name="remove" value="'.$data['Id'] .' ">X - حذف </button></from/>
+    
  
-    </div>
-  </div>';
+    <a href="edit.php?edit='. $data['Id'].'" class="btn btn-light" type="submit" name="edit" >تعديل</a> 
+    
+    
+  </div>
+</div>';
+
+
 }
-}else{
-  $products = $database->prepare("SELECT * FROM products");
-  $products->execute();
-  foreach(  $products AS $myProducts){
-    echo '<div class="card bg-light mb-3" style="max-width: 18rem;">
-    <div class="card-header">' . $myProducts['Name'] .'</div>
-    <div class="card-body">
-      <h5 class="card-title">' . $myProducts['Price'] .' السعر </h5>
- 
-    </div>
-  </div>';
 
-  }
+if(isset($_POST['remove'])){
+$removeProduct = $database->prepare("DELETE FROM products WHERE Id = :id ");
+$getId = $_POST['remove'];
+$removeProduct->bindParam("id",$getId);
+
+if($removeProduct->execute()){
+echo 'تم حذف بنجاح';
+header("Location: index.php");
+}else{
+  echo 'فشل حذف';
+}
 }
 ?>
 
 
-<form method="GET">
-
-<input type="number" name="startNumber">
-<input type="number" name="endNumber">
-<button type="submit" name="filter">فلتر بيانات</button>
-</form>

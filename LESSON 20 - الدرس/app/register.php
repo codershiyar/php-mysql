@@ -23,7 +23,6 @@ $password = "";
 $database = new PDO("mysql:host=localhost; dbname=codershiyar;",$username,$password);
 
 
-
 if(isset($_POST['register'])){
     $checkEmail = $database->prepare("SELECT * FROM users WHERE EMAIL = :EMAIL");
     $email = $_POST['email'];
@@ -40,16 +39,35 @@ if(isset($_POST['register'])){
         $email = $_POST['email'];
         $age = $_POST['age'];
 
-        $addUser = $database->prepare("INSERT INTO users(NAME,AGE,PASSWORD,EMAIL)
-         VALUES(:NAME,:AGE,:PASSWORD,:EMAIL)");
+        $addUser = $database->prepare("INSERT INTO 
+        users(NAME,AGE,PASSWORD,EMAIL,SECURITY_CODE)
+         VALUES(:NAME,:AGE,:PASSWORD,:EMAIL,:SECURITY_CODE)");
+
+
         $addUser->bindParam("NAME",$name);
         $addUser->bindParam("AGE",$age);
         $addUser->bindParam("PASSWORD",$password);
         $addUser->bindParam("EMAIL",$email);
+        $securityCode = md5(date("h:i:s"));
+        $addUser->bindParam("SECURITY_CODE",$securityCode);
+
         if($addUser->execute()){
             echo '<div class="alert alert-success" role="alert">
             تم إنشاء حساب بنجاح 
           </div>';
+
+          require_once "mail.php";
+          $mail->addAddress($email);
+          $mail->Subject = "رمز تحقق من بريد الكتروني";
+          $mail->Body = '<h1> شكرا لتسجيلك في موقعنا</h1>'
+          . "<div> رابط تحقق من حساب" . "<div>" . 
+          "<a href='http://localhost/app/active.php?code=".$securityCode  . "'>
+           " . "http://localhost/app/active.php?code=" .$securityCode . "</a>";
+          ;
+          $mail->setFrom("academyshiyar@gmail.com", "Academy Shiyar");
+          $mail->send();
+
+
         }else{
             echo '<div class="alert alert-danger" role="alert">
             حدث خطا غير متوقع
