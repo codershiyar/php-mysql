@@ -61,7 +61,8 @@ echo '
 
 if(isset($_POST['update'])){
 $updateUser = $database->prepare("UPDATE users SET NAME
- = :name , AGE= :age ,ACTIVATED=:activated ");
+ = :name , AGE= :age ,ACTIVATED=:activated WHERE ID = :id ");
+ $updateUser->bindParam('id', $_SESSION['userId']);
  $updateUser->bindParam("name",$_POST['name']);
  $updateUser->bindParam("age",$_POST['age']);
  $updateUser->bindParam("activated",$_POST['activated']);

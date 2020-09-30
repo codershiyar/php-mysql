@@ -60,17 +60,19 @@ if(isset($_GET['searchBtn'])){
 }
 
 if(isset($_GET['remove'])){
- $removeItems =  $database->prepare("DELETE FROM todolist WHERE ID = :id");
- $removeItems->bindParam("id",$_GET['remove']);
+ $removeItems = $database->prepare("DELETE FROM todolist WHERE userId = :userId ");
+ $removeItems->bindParam("userId",$_GET['remove']);
  $removeItems->execute();
 
-$removeUser = $database->prepare("DELETE FROM users WHERE ID = :id");
-$removeUser->bindParam("id",$_GET['remove']);
-if($removeUser->execute()){
-echo '<div class="alert alert-success mt-3" > تم حذف مستخدم بنجاح </div>';
-header("refresh:2; url=search.php");
-}
+ $removeUser = $database->prepare("DELETE FROM users WHERE ID = :userId ");
+ $removeUser->bindParam("userId",$_GET['remove']);
+ if( $removeUser->execute()){
+echo '<div class="alert alert-info">تم حذف بنجاح</div>';
+header("Refresh: 2; url=search.php");
 
+ }else{
+   echo $removeUser->errorInfo();  
+ }
 }
 
 }else{
