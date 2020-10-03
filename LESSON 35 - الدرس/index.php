@@ -1,50 +1,53 @@
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
-<?php 
-// 1) connect to database - اتصال بقاعدة البيانات
-$username = "root";
-$password = "";
-$database = new PDO("mysql:host=localhost; dbname=codershiyar;",$username,$password);
+<!DOCTYPE html>
+<html >
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
 
+</head>
+<body>
+    <!-- Image and text -->
+<nav class="navbar navbar-light bg-light">
 
-// 2) define how many results you want per page - تعريف عدد نتائج لكل صفحة
-$resultsPerPage = 10;
+  <a class="navbar-brand" href="#">
+    Coder Shiyar
+  </a>
 
-// 3) ايجاد عدد نتائج البيانات الذي تحدده من قاعدة البيانات
-// find out the number of results stored in database -
-$numberOfResults = $database->prepare("SELECT * FROM user_details ");
-$numberOfResults->execute();
- $numberOfResults = $numberOfResults->rowCount();
+  <img src="../img/logo.jpg" width="50" height="50" class="d-inline-block align-top" alt="" loading="lazy">
 
-// 4) -تحديد رقم الصفحة الذي يعمل عليه الزائر حاليًا
-// determine which page number visitor is currently on 
-if(!isset($_GET['page'])){
-$page = 1;
-}else if(isset($_GET['page'])){
-$page = $_GET['page'];
+</nav>
+
+<main class="container m-auto" style="max-width: 720px;">
+
+<?php
+session_start();
+if(isset($_SESSION['user'])){
+if($_SESSION['user']->ROLE === "ADMIN"){
+echo '<div class="shadow p-3 mb-1 bg-white rounded mt-5"> Welcome ' .$_SESSION['user']->NAME . "</div>";
+echo '<a  class="btn btn-light shadow w-100 mb-1" href="profile.php">تعديل ملف الشخصي</a>';
+echo '<a  class="btn btn-light shadow w-100 mb-1" href="todolist.php">إضافة واجبات لقيام بها</a>';
+echo '<a  class="btn btn-light shadow w-100 mb-1" href="search.php">إدارة المستخدمين</a>';
+
+echo "<form> <button class='btn btn-danger w-100' type='submit' name='logout'>تسجيل خروج</button></form>";
+}else{
+    header("location:http://localhost/App/login.php",true); 
+    die("");
 }
-// 5) determine number of total pages available - تحديد عدد الصفحات الإجمالية المتاحة
+}else{
+    header("location:http://localhost/App/login.php",true); 
+    die(""); 
+}
 
-$totalPages = ceil($numberOfResults / $resultsPerPage) ;
-
-for($count = 1; $count<= $totalPages; ++$count){
-    if($page == $count){
-        echo '<a style="color:black;" href="index.php?page='.$count.'">'.$count.'</a> ';
-    }else{
-        echo '<a  href="index.php?page='.$count.'">'.$count.'</a> ';
+if(isset($_GET['logout'])){
+    session_unset();
+    session_destroy();
+    header("location:http://localhost/App/login.php",true); 
     }
-   
-}
-// 6) تحديد رقم البداية المحدد للنتائج في صفحة العرض
-// determine the sql LIMIT starting number for the results on the displaying page
-
-$results = $database->prepare("SELECT * FROM user_details LIMIT " . $resultsPerPage . " OFFSET " . ($page-1)*$resultsPerPage);
-$results->execute();
+?> 
+</main>
+</body>
+</html>
 
 
-// 7) display the results  - // عرض  النتائج الصفحات
-
-foreach($results  AS $result){
-echo '<div class="shadow p-3 mb-3">'. $result['username'] . '</div>';
-}
-
-?>
